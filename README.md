@@ -1,4 +1,4 @@
 # ImageCalendar
 Calendar with images
 
-![Example Week Planner Cards](examples/voorbeeld.png)
+![Example Week Planner Cards](examples/screenshot.png)
