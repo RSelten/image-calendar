@@ -1,5 +1,5 @@
 /*
- * ImageCalendar - Weekkalender met plaatjes
+ * ImageCalendar - Week calendar with images
  * Copyright (C) 2025  Roy Selten
  *
  * This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@ $dbName = $env['DB_NAME'];
 $dbUser = $env['DB_USER'];
 $dbPass = $env['DB_PASS'];
 
-// Voorbeeld databaseconnectie (PDO)
+// Example database connection (PDO)
 $dsn = "mysql:host=$dbHost;dbname=$dbName;charset=utf8mb4";
 $pdo = new PDO($dsn, $dbUser, $dbPass);
 
@@ -125,16 +125,16 @@ function api_reorder_slot(){ $pdo=pdo_conn(); $datum=$_POST['datum']??''; $slot=
 }
 function api_copyfromlastweek(){ $pdo = pdo_conn(); $datum = $_POST['datum'] ?? ''; if(!$datum || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $datum)) json_response(['ok'=>false,'error'=>'Ongeldige datum']);
 
-  // Bepaal maandag van de opgegeven week
+  // Determine Monday of the given week
   $d = new DateTime($datum); $year = (int)$d->format('o'); $week = (int)$d->format('W'); $monday = monday_of_iso_week($year, $week);
 
-  // Bepaal maandag van vorige week
+  // Determine Monday of the previous week
   $prevMonday = clone $monday; $prevMonday->modify('-7 days');
 
-  // Verzamel alle dagen van deze week en vorige week
+  // Collect all days for this week and the previous week
   $days = []; $prevDays = []; for($i=0; $i<7; $i++){ $days[] = (clone $monday)->modify("+{$i} days")->format('Y-m-d'); $prevDays[] = (clone $prevMonday)->modify("+{$i} days")->format('Y-m-d'); }
 
-  // Haal alle items van vorige week op
+  // Fetch all items from the previous week
   $ph = implode(',', array_fill(0, count($prevDays), '?'));
   $stmt = $pdo->prepare("SELECT datum, slot, afbeelding, positie FROM calendar_items WHERE datum IN ($ph) ORDER BY datum, slot, positie, id"); $stmt->execute($prevDays); $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -142,13 +142,13 @@ function api_copyfromlastweek(){ $pdo = pdo_conn(); $datum = $_POST['datum'] ?? 
 
   $pdo->beginTransaction();
   try{
-    // Verwijder alle items van deze week
+    // Delete all items for this week
     $ph2 = implode(',', array_fill(0, count($days), '?'));
     $pdo->prepare("DELETE FROM calendar_items WHERE datum IN ($ph2)")->execute($days);
 
-    // Kopieer items van vorige week naar deze week (zelfde slot, positie, afbeelding)
+    // Copy items from previous week to this week (same slot, position, image)
     foreach($rows as $r){
-      // Bereken de nieuwe datum (zelfde dag van de week)
+      // Calculate the new date (same weekday)
       $prevIdx = array_search($r['datum'], $prevDays);
       if($prevIdx === false) continue;
       $newDatum = $days[$prevIdx];
@@ -371,7 +371,7 @@ function nlDate(date){
 function itemNode(row){
   const n=el('div',{class:'item',draggable:'false'});
   n.dataset.id=row.id||''; n.dataset.filename=row.afbeelding||row.filename;
-  const img=el('img',{src:`${STATE.imageUrlBase}/${n.dataset.filename}`,alt:n.dataset.filename});
+  const img=el('img',{src:`${STATE.imageUrlBase}/${n.dataset.filename}`,alt=n.dataset.filename});
   const cap=el('div',{class:'cap'}, n.dataset.filename);
   n.append(img);
   if (!STATE.readonly) makeDraggable(n);
@@ -382,7 +382,7 @@ function buildGrid(days){
   const headRow=document.getElementById('kalHead');
   const body=document.getElementById('kalBody');
   headRow.innerHTML=''; body.innerHTML='';
-  const todayStr = new Date().toISOString().slice(0,10);   // <--- toegevoegd
+  const todayStr = new Date().toISOString().slice(0,10);   // <--- added
   days.forEach((d,idx)=>{
     const th=el('th',{"data-col":idx});
     const head=el('div',{class:'dayhead'});
@@ -490,7 +490,7 @@ async function clearDay(datum){
 }
 
 async function copyFromLastWeek(){
-  const datum = STATE.monday; // Maandag van de huidige week
+  const datum = STATE.monday; // Monday of the current week
   if(!confirm(`Weet je zeker dat je alle plaatjes van de week ervoor wilt kopiëren naar de week van ${datum}? Dit overschrijft alle bestaande plaatjes in deze week.`)){
     return;
   }
