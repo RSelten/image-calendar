@@ -22,7 +22,7 @@ Designed to make daily and weekly planning more visual and intuitive — especia
 
 1. Clone or download this repository:  
    ```bash
-   git clone https://github.com/<your-username>/<your-repo-name>.git
+   git clone https://github.com/RSelten/image-calendar.git
    ```
 
 2. Place the folder on your local or external web server (for example, via Samba).  
@@ -41,8 +41,7 @@ Designed to make daily and weekly planning more visual and intuitive — especia
 ## 🛠️ Technology
 
 - **Frontend:** HTML, CSS, JavaScript (drag & drop + touchscreen support)  
-- **Backend:** PHP (for file management and logic)  
-
+- **Backend:** PHP (for file management and logic) + MySQL
 ---
 
 ## 🧑‍💻 Contributing
